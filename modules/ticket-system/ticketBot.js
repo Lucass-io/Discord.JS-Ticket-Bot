@@ -1,10 +1,9 @@
 const { Client, GatewayIntentBits, ActionRowBuilder, StringSelectMenuBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, PermissionsBitField, ChannelType, EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const { BOT_EIGENAAR_USERID, TOEGESTAANDE_ROLLEN_PER_CATEGORIE, STAFF_ROLE_ID, TICKET_CATEGORIE_IDS, CATEGORIE_NAMEN, VRAGEN_PER_CATEGORIE, TEKST_IN_TICKET_EMBED_PER_CATEGORIE, TICKET_NAAM_BEGIN, TICKET_LOGS_CHANNEL_ID, FEEDBACK_CHANNEL_ID } = require('../../configs/tickets_config.json');
+const { ALLOWED_ROLES_PER_CATEGORY, STAFF_ROLE_ID, TICKET_CATEGORY_IDS, CATEGORY_NAMES, QUESTIONS_PER_CATEGORY, TICKET_EMBED_TEXT_PER_CATEGORY, TICKET_NAME_PREFIX, TICKET_LOGS_CHANNEL_ID, FEEDBACK_CHANNEL_ID } = require('../../configs/tickets_config.json');
 
 const usersWithOpenTickets = new Set();
-
 
 function registerTicketBot(client) {
     client.once('ready', () => {
@@ -15,15 +14,15 @@ function registerTicketBot(client) {
         const commands = [
             new SlashCommandBuilder()
                 .setName('tickets')
-                .setDescription('Creëer een embed met ticket selectie'),
+                .setDescription('Create an embed with ticket selection'),
             new SlashCommandBuilder()
                 .setName('add')
-                .setDescription('Voeg een gebruiker toe aan het ticket')
-                .addUserOption(option => option.setName('gebruiker').setDescription('De gebruiker die je wilt toevoegen').setRequired(true)),
+                .setDescription('Add a user to the ticket')
+                .addUserOption(option => option.setName('user').setDescription('The user you want to add').setRequired(true)),
             new SlashCommandBuilder()
                 .setName('remove')
-                .setDescription('Verwijder een gebruiker uit het ticket')
-                .addUserOption(option => option.setName('gebruiker').setDescription('De gebruiker die je wilt verwijderen').setRequired(true)),
+                .setDescription('Remove a user from the ticket')
+                .addUserOption(option => option.setName('user').setDescription('The user you want to remove').setRequired(true)),
         ];
 
         await client.application.commands.set(commands);
@@ -32,27 +31,26 @@ function registerTicketBot(client) {
     client.on('interactionCreate', async interaction => {
         if (interaction.isCommand()) {
             if (interaction.commandName === 'tickets') {
-                if (interaction.user.id !== BOT_EIGENAAR_USERID) {
-                    await interaction.reply({ content: 'Jij hebt geen permissie om dit te gebruiken.', ephemeral: true });
+                if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+                    await interaction.reply({ content: 'You do not have permission to use this.', ephemeral: true });
                     return;
                 }
 
                 const button = new ButtonBuilder()
                     .setCustomId('openDropdown')
                     .setLabel('Ticket support')
-                    .setStyle(ButtonStyle.Primary)
-                    .setEmoji('<:pijl:1275166344324579379>'); 
+                    .setStyle(ButtonStyle.Primary);
 
                 const buttonRow = new ActionRowBuilder().addComponents(button);
 
                 const initialEmbed = new EmbedBuilder()
                     .setAuthor({ name: 'Lucas | Tickets' })
-                    .setTitle('Lucas | Ticket Paneel')
-                    .setDescription('Beste allen! Je bent op de juiste plek gekomen om een vraag te stellen aan ons team! \n \nKlik op de knop onder dit bericht om een ticket te openen! Kies de beste categorie die bij jouw vraag past, staat deze categorie er niet bij kunnen we deze wellicht later toevoegen.\n \nKies voor nu voor de meest passende categorie!')
+                    .setTitle('Lucas | Ticket Panel')
+                    .setDescription('Dear all! You have come to the right place to ask a question to our team! \n \nClick the button below this message to open a ticket! Choose the category that best matches your question, and if your category is not listed, we might be able to add it later.\n \nFor now, choose the most suitable category!')
                     .setColor(0xdd42f5)
                     .setFooter({ text: 'Lucas | Tickets' });
 
-                await interaction.reply({ content: 'Embed aan het genereren...', ephemeral: true });
+                await interaction.reply({ content: 'Generating embed...', ephemeral: true });
 
                 const channel = interaction.channel;
 
@@ -60,10 +58,10 @@ function registerTicketBot(client) {
 
             } else if (interaction.commandName === 'add') {
                 const channel = interaction.channel;
-                const userToAdd = interaction.options.getUser('gebruiker');
+                const userToAdd = interaction.options.getUser('user');
 
-                if (!channel.parent || !Object.values(TICKET_CATEGORIE_IDS).includes(channel.parentId)) {
-                    await interaction.reply({ content: 'Dit is geen ticket kanaal.', ephemeral: true });
+                if (!channel.parent || !Object.values(TICKET_CATEGORY_IDS).includes(channel.parentId)) {
+                    await interaction.reply({ content: 'This is not a ticket channel.', ephemeral: true });
                     return;
                 }
 
@@ -72,27 +70,27 @@ function registerTicketBot(client) {
                         ViewChannel: true,
                         SendMessages: true,
                     });
-                    await interaction.reply({ content: `${userToAdd} is toegevoegd aan het ticket.`, ephemeral: true });
+                    await interaction.reply({ content: `${userToAdd} has been added to the ticket.`, ephemeral: true });
                 } catch (error) {
-                    console.error('Er is een fout opgetreden bij het toevoegen van de gebruiker:', error);
-                    await interaction.reply({ content: 'Er is een fout opgetreden bij het toevoegen van de gebruiker.', ephemeral: true });
+                    console.error('An error occurred while adding the user:', error);
+                    await interaction.reply({ content: 'An error occurred while adding the user.', ephemeral: true });
                 }
 
             } else if (interaction.commandName === 'remove') {
                 const channel = interaction.channel;
-                const userToRemove = interaction.options.getUser('gebruiker');
+                const userToRemove = interaction.options.getUser('user');
 
-                if (!channel.parent || !Object.values(TICKET_CATEGORIE_IDS).includes(channel.parentId)) {
-                    await interaction.reply({ content: 'Dit is geen ticket kanaal.', ephemeral: true });
+                if (!channel.parent || !Object.values(TICKET_CATEGORY_IDS).includes(channel.parentId)) {
+                    await interaction.reply({ content: 'This is not a ticket channel.', ephemeral: true });
                     return;
                 }
 
                 try {
                     await channel.permissionOverwrites.delete(userToRemove);
-                    await interaction.reply({ content: `${userToRemove} is verwijderd uit het ticket.`, ephemeral: true });
+                    await interaction.reply({ content: `${userToRemove} has been removed from the ticket.`, ephemeral: true });
                 } catch (error) {
-                    console.error('Er is een fout opgetreden bij het verwijderen van de gebruiker:', error);
-                    await interaction.reply({ content: 'Er is een fout opgetreden bij het verwijderen van de gebruiker.', ephemeral: true });
+                    console.error('An error occurred while removing the user:', error);
+                    await interaction.reply({ content: 'An error occurred while removing the user.', ephemeral: true });
                 }
             }
         }
@@ -100,11 +98,11 @@ function registerTicketBot(client) {
         if (interaction.isButton() && interaction.customId === 'openDropdown') {
             const selectMenu = new StringSelectMenuBuilder()
                 .setCustomId('selectCategory')
-                .setPlaceholder('Selecteer een van de categorieën')
+                .setPlaceholder('Select one of the categories')
                 .addOptions([
-                    { label: CATEGORIE_NAMEN.category1, description: 'Voor alle vragen die niet in de andere categorieën passen.', value: 'category1', emoji: '🏷️' },
-                    { label: CATEGORIE_NAMEN.category2, description: 'Voor als je wat wilt kopen.', value: 'category2', emoji: '🏷️' },
-                    { label: CATEGORIE_NAMEN.category3, description: 'Voor als je hulp nodig hebt met iets.', value: 'category3', emoji: '🏷️' },
+                    { label: CATEGORY_NAMES.category1, description: 'For all questions that don’t fit into other categories.', value: 'category1', emoji: '🏷️' },
+                    { label: CATEGORY_NAMES.category2, description: 'For when you want to purchase something.', value: 'category2', emoji: '🏷️' },
+                    { label: CATEGORY_NAMES.category3, description: 'For when you need help with something.', value: 'category3', emoji: '🏷️' },
                 ]);
 
             const row = new ActionRowBuilder().addComponents(selectMenu);
@@ -112,7 +110,7 @@ function registerTicketBot(client) {
             const dropdownEmbed = new EmbedBuilder()
                 .setAuthor({ name: 'Lucas | Tickets' })
                 .setTitle('Lucas | Ticket Category')
-                .setDescription(`Beste ${interaction.user}, je bent op de juiste plek om je ticket te openen! Klik op de meest passende vraag in de dropdown onder dit bericht! \n \nStaat de meest passende optie hier niet bij? Kies dan voor de "Overige vraag" categorie! Hier kunnen we je altijd helpen.`)
+                .setDescription(`Dear ${interaction.user}, you are at the right place to open your ticket! Click on the most appropriate question in the dropdown below this message! \n \nIf the most appropriate option is not here, choose the "Other question" category! We can always help you here.`)
                 .setColor(0xdd42f5)
                 .setFooter({ text: 'Lucas | Tickets' });
 
@@ -121,16 +119,16 @@ function registerTicketBot(client) {
 
         if (interaction.isStringSelectMenu() && interaction.customId === 'selectCategory') {
             if (usersWithOpenTickets.has(interaction.user.id)) {
-                await interaction.reply({ content: 'Je hebt al een open ticket. Sluit je huidige ticket voordat je een nieuwe aanmaakt.', ephemeral: true });
+                await interaction.reply({ content: 'You already have an open ticket. Please close your current ticket before creating a new one.', ephemeral: true });
                 return;
             }
 
             const selectedCategory = interaction.values[0];
             const modal = new ModalBuilder()
                 .setCustomId(`ticketModal_${selectedCategory}`)
-                .setTitle(CATEGORIE_NAMEN[selectedCategory]);
+                .setTitle(CATEGORY_NAMES[selectedCategory]);
 
-            const modalFields = VRAGEN_PER_CATEGORIE[selectedCategory].map(question => 
+            const modalFields = QUESTIONS_PER_CATEGORY[selectedCategory].map(question => 
                 new TextInputBuilder()
                     .setCustomId(question.id)
                     .setLabel(question.label)
@@ -154,34 +152,34 @@ function registerTicketBot(client) {
 
                     await interaction.channel.setName(newChannelName);
 
-                    const edittednameEmbed = new EmbedBuilder()
-                        .setTitle('De naam van de ticket is aangepast')
-                        .setDescription(`De naam is aanngepast naar:\n \n **${newChannelName}**`)
+                    const editedNameEmbed = new EmbedBuilder()
+                        .setTitle('The ticket name has been changed')
+                        .setDescription(`The name has been changed to:\n \n **${newChannelName}**`)
                         .setColor(0xdd42f5);
 
-                    await interaction.editReply({ embeds: [edittednameEmbed] });
+                    await interaction.editReply({ embeds: [editedNameEmbed] });
 
                 } else {
                     const selectedCategory = interaction.customId.split('_')[1];
-                    const categoryLabel = CATEGORIE_NAMEN[selectedCategory];
-                    const categoryDescription = TEKST_IN_TICKET_EMBED_PER_CATEGORIE[selectedCategory];
+                    const categoryLabel = CATEGORY_NAMES[selectedCategory];
+                    const categoryDescription = TICKET_EMBED_TEXT_PER_CATEGORY[selectedCategory];
                     const userId = interaction.user.id;
-                    const categoryRoleId = TOEGESTAANDE_ROLLEN_PER_CATEGORIE[selectedCategory];
+                    const categoryRoleId = ALLOWED_ROLES_PER_CATEGORY[selectedCategory];
                     const staffRoleId = STAFF_ROLE_ID;
-                    const categoryChannelId = TICKET_CATEGORIE_IDS[selectedCategory];
-                    const ticketBaseName = TICKET_NAAM_BEGIN[selectedCategory];
+                    const categoryChannelId = TICKET_CATEGORY_IDS[selectedCategory];
+                    const ticketBaseName = TICKET_NAME_PREFIX[selectedCategory];
 
                     if (!userId || !categoryRoleId || !staffRoleId || !categoryChannelId || !ticketBaseName) {
                         if (!interaction.deferred && !interaction.replied) {
                             await interaction.deferReply({ ephemeral: true });
                         }
-                        await interaction.editReply({ content: "Feedback verstuurd!", ephemeral: true });
+                        await interaction.editReply({ content: "Feedback sent!", ephemeral: true });
                         return;
                     }
 
-                    const answers = VRAGEN_PER_CATEGORIE[selectedCategory].map(question => ({
+                    const answers = QUESTIONS_PER_CATEGORY[selectedCategory].map(question => ({
                         name: question.label,
-                        value: interaction.fields.getTextInputValue(question.id) || 'Geen tekst opgegeven'
+                        value: interaction.fields.getTextInputValue(question.id) || 'No text provided'
                     }));
 
                     await interaction.deferReply({ ephemeral: true });
@@ -218,20 +216,20 @@ function registerTicketBot(client) {
 
                     if (answers.length > 0) {
                         const answersEmbed = new EmbedBuilder()
-                            .setTitle('Formulier overzicht')
-                            .setDescription('hieronder is te zien wat er in het formulier is ingevuld:')
+                            .setTitle('Form Overview')
+                            .setDescription('Here are the answers provided in the form:')
                             .addFields(answers)
                             .setColor(0xdd42f5);
 
                         const deleteButton = new ButtonBuilder()
                             .setCustomId('deleteTicket')
-                            .setLabel('Sluit ticket')
+                            .setLabel('Close ticket')
                             .setEmoji('❌')
                             .setStyle(ButtonStyle.Primary);
 
                         const renameButton = new ButtonBuilder()
                             .setCustomId('renameTicket')
-                            .setLabel('Hernoem ticket')
+                            .setLabel('Rename ticket')
                             .setEmoji('🔎')
                             .setStyle(ButtonStyle.Secondary);
 
@@ -239,18 +237,18 @@ function registerTicketBot(client) {
 
                         await ticketChannel.send({ embeds: [answersEmbed], components: [buttonsRow] });
                     } else {
-                        await ticketChannel.send('Er zijn geen antwoorden opgegeven in het formulier.');
+                        await ticketChannel.send('No answers were provided in the form.');
                     }
 
-                    await interaction.editReply({ content: `Je ticket is aangemaakt, kijk maar: ${ticketChannel}`, ephemeral: true });
+                    await interaction.editReply({ content: `Your ticket has been created. Check it out: ${ticketChannel}`, ephemeral: true });
                 }
             } catch (error) {
-                console.error('Er is een error ontstaan bij een interactie:', error);
+                console.error('An error occurred during an interaction:', error);
                 if (!interaction.deferred && !interaction.replied) { 
                     try {
-                        await interaction.reply({ content: 'Er is een error ontstaan.', ephemeral: true });
+                        await interaction.reply({ content: 'An error occurred.', ephemeral: true });
                     } catch (err) {
-                        console.error('Gefaald om te reageren op de interactie:', err);
+                        console.error('Failed to reply to the interaction:', err);
                     }
                 }
             }
@@ -274,8 +272,8 @@ function registerTicketBot(client) {
                 });
     
                 const userId = interaction.user.id;
-                const categoryKey = Object.keys(TICKET_CATEGORIE_IDS).find(key => TICKET_CATEGORIE_IDS[key] === channel.parentId);
-                const categoryLabel = CATEGORIE_NAMEN[categoryKey];
+                const categoryKey = Object.keys(TICKET_CATEGORY_IDS).find(key => TICKET_CATEGORY_IDS[key] === channel.parentId);
+                const categoryLabel = CATEGORY_NAMES[categoryKey];
                 const messages = await channel.messages.fetch({ limit: 100 });
                 const messageCount = messages.size;
     
@@ -285,29 +283,29 @@ function registerTicketBot(client) {
                     attachment,
                     channelName: channel.name,
                     guildName: interaction.guild.name,
-                    TicketAanmaker: channel.topic,
+                    TicketCreator: channel.topic,
                 };
     
                 if (interaction.customId === 'deleteTicket') {
                     if (!interaction.member.roles.cache.has(STAFF_ROLE_ID)) {
-                        await interaction.reply({ content: 'Jij hebt geen permissie om de ticket te sluiten.', ephemeral: true });
+                        await interaction.reply({ content: 'You do not have permission to close the ticket.', ephemeral: true });
                         return;
                     }
     
                     const deleteEmbed = new EmbedBuilder()
-                        .setTitle('Ticket gesloten')
-                        .setDescription('De ticket zal worden verwijderd over 5 seconden.')
+                        .setTitle('Ticket closed')
+                        .setDescription('The ticket will be deleted in 5 seconds.')
                         .setColor(0xFF0000);
     
                     await interaction.reply({ embeds: [deleteEmbed] });
 
-                    const TicketAanmaker = channel.topic
+                    const TicketCreator = channel.topic;
     
                     const logEmbed = new EmbedBuilder()
-                        .setTitle('Ticket gesloten')
-                        .setDescription(`Ticket **(${channel.name})** is gesloten door ${interaction.user}.`)
+                        .setTitle('Ticket closed')
+                        .setDescription(`Ticket **(${channel.name})** was closed by ${interaction.user}.`)
                         .addFields(
-                            { name: 'Ticket informatie', value: `> Ticket maker: <@${TicketAanmaker}> \n> Categorie: ${categoryLabel} \n> Totaal aantal berichten: ${messageCount}`, inline: true },
+                            { name: 'Ticket Information', value: `> Ticket creator: <@${TicketCreator}> \n> Category: ${categoryLabel} \n> Total number of messages: ${messageCount}`, inline: true },
                         )
                         .setColor(0xdd42f5);
     
@@ -320,26 +318,26 @@ function registerTicketBot(client) {
                             });
                         }
     
-                        const ticketOpener = await client.users.fetch(TicketAanmaker);
+                        const ticketOpener = await client.users.fetch(TicketCreator);
                         if (ticketOpener) {
                             const ratingSelectMenu = new StringSelectMenuBuilder()
                                 .setCustomId(`selectRating_${channel.id}`)
-                                .setPlaceholder('Selecteer een beoordeling...')
+                                .setPlaceholder('Select a rating...')
                                 .addOptions([
-                                    { label: '5 sterren', emoji: '⭐', value: '5' },
-                                    { label: '4 sterren', emoji: '⭐', value: '4' },
-                                    { label: '3 sterren', emoji: '⭐', value: '3' },
-                                    { label: '2 sterren', emoji: '⭐', value: '2' },
-                                    { label: '1 ster', emoji: '⭐', value: '1' },
+                                    { label: '5 stars', emoji: '⭐', value: '5' },
+                                    { label: '4 stars', emoji: '⭐', value: '4' },
+                                    { label: '3 stars', emoji: '⭐', value: '3' },
+                                    { label: '2 stars', emoji: '⭐', value: '2' },
+                                    { label: '1 star', emoji: '⭐', value: '1' },
                                 ]);
     
                             const ratingRow = new ActionRowBuilder().addComponents(ratingSelectMenu);
     
                             const ratingEmbed = new EmbedBuilder()
-                                .setTitle('Ticket Gesloten')
-                                .setDescription(`Uw ticket is gesloten in **${interaction.guild.name}**. \n> We willen graag weten hoe tevreden u bent met onze ondersteuning door deze te beoordelen met **1-5** sterren hieronder.`)
+                                .setTitle('Ticket Closed')
+                                .setDescription(`Your ticket has been closed in **${interaction.guild.name}**. \n> We would like to know how satisfied you are with our support by rating it with **1-5** stars below.`)
                                 .addFields(
-                                    { name: 'Ticket Informatie', value: `> Categorie: ${categoryLabel}. \n> Kanaal naam: ${channel.name} \n> Totaal aantal berichten: ${messageCount}`, inline: false}
+                                    { name: 'Ticket Information', value: `> Category: ${categoryLabel}. \n> Channel name: ${channel.name} \n> Total number of messages: ${messageCount}`, inline: false}
                                 )
                                 .setColor(0xdd42f5);
     
@@ -360,17 +358,17 @@ function registerTicketBot(client) {
     
                 if (interaction.customId === 'renameTicket') {
                     if (!interaction.member.roles.cache.has(STAFF_ROLE_ID)) {
-                        await interaction.reply({ content: 'Je hebt geen permissie om de ticket te hernoemen.', ephemeral: true });
+                        await interaction.reply({ content: 'You do not have permission to rename the ticket.', ephemeral: true });
                         return;
                     }
     
                     const renameModal = new ModalBuilder()
                         .setCustomId('renameTicketModal')
-                        .setTitle('Hernoem ticket');
+                        .setTitle('Rename ticket');
     
                     const renameInput = new TextInputBuilder()
                         .setCustomId('newChannelName')
-                        .setLabel('Nieuwe ticket naam')
+                        .setLabel('New ticket name')
                         .setStyle(TextInputStyle.Short);
     
                     const renameModalRow = new ActionRowBuilder().addComponents(renameInput);
@@ -392,7 +390,7 @@ function registerTicketBot(client) {
     
             const additionalMessageInput = new TextInputBuilder()
                 .setCustomId('additionalMessage')
-                .setLabel('Extra opmerking (Niet verplicht)')
+                .setLabel('Extra comment (optional)')
                 .setStyle(TextInputStyle.Short)
                 .setRequired(false);
     
@@ -411,10 +409,10 @@ function registerTicketBot(client) {
             const feedbackChannel = client.channels.cache.get(FEEDBACK_CHANNEL_ID);
         
             const feedbackEmbed = new EmbedBuilder()
-                .setTitle('Nieuwe Ticket Beoordeling')
+                .setTitle('New Ticket Rating')
                 .addFields(
-                    { name: 'Ticket informatie', value: `> Ticket maker: <@${interaction.user.id}> (${interaction.user.tag}) \n> Categorie: ${ticketData.categoryLabel}. \n> Totaal aantal berichten: ${ticketData.messageCount}`, inline: true },
-                    { name: `Beoordeling`, value: `> ${'⭐'.repeat(parseInt(selectedRating))} \n> ${additionalMessage}` },
+                    { name: 'Ticket Information', value: `> Ticket creator: <@${interaction.user.id}> (${interaction.user.tag}) \n> Category: ${ticketData.categoryLabel}. \n> Total number of messages: ${ticketData.messageCount}`, inline: true },
+                    { name: `Rating`, value: `> ${'⭐'.repeat(parseInt(selectedRating))} \n> ${additionalMessage}` },
                 )
                 .setTimestamp()
                 .setFooter({ text: interaction.user.tag, iconURL: interaction.user.avatarURL()})
@@ -437,11 +435,11 @@ function registerTicketBot(client) {
             }
         
             const newFeedbackEmbed = new EmbedBuilder()
-                .setTitle('Ticket Gesloten')
-                .setDescription(`Uw ticket is gesloten in **${feedbackChannel.guild.name}**.`)
+                .setTitle('Ticket Closed')
+                .setDescription(`Your ticket has been closed in **${feedbackChannel.guild.name}**.`)
                 .addFields(
-                    { name: 'Ticket Informatie', value: `> Categorie: ${ticketData.categoryLabel}. \n> Kanaal naam: ${ticketData.channelName} \n> Totaal aantal berichten: ${ticketData.messageCount}`, inline: false},
-                    { name: `Uw beoordeling`, value: `> ${'⭐'.repeat(parseInt(selectedRating))} \n> ${additionalMessage}` },
+                    { name: 'Ticket Information', value: `> Category: ${ticketData.categoryLabel}. \n> Channel name: ${ticketData.channelName} \n> Total number of messages: ${ticketData.messageCount}`, inline: false},
+                    { name: `Your rating`, value: `> ${'⭐'.repeat(parseInt(selectedRating))} \n> ${additionalMessage}` },
                 )
                 .setColor(0xdd42f5);
         
@@ -451,7 +449,7 @@ function registerTicketBot(client) {
             });
         
             if (!interaction.replied && !interaction.deferred) {
-                await interaction.reply({ content: 'Bedankt voor uw feedback!', ephemeral: true });
+                await interaction.reply({ content: 'Thank you for your feedback!', ephemeral: true });
             }
         }        
     });    
