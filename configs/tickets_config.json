@@ -1,45 +1,44 @@
 {
-    "BOT_EIGENAAR_USERID": "690879933764993035",
-    "TOEGESTAANDE_ROLLEN_PER_CATEGORIE": {
-      "category1": "1275239596678053908",
-      "category2": "1275239596678053908",
-      "category3": "1275239596678053908"
-    },
-    "STAFF_ROLE_ID": "1275239596678053908",
-    "TICKET_CATEGORIE_IDS": {
-      "category1": "1275238713600774186",
-      "category2": "1275238765517996096",
-      "category3": "1275238791048597575"
-    },
-    "CATEGORIE_NAMEN": {
-      "category1": "Categorie 1",
-      "category2": "Categorie 2",
-      "category3": "Categorie 3"
-    },
-    "VRAGEN_PER_CATEGORIE": {
-      "category1": [
-        { "id": "question1", "label": "Vraag 1", "style": "Short" },
-        { "id": "question2", "label": "Vraag 2", "style": "Paragraph" }
-      ],
-      "category2": [
-        { "id": "question1", "label": "Vraag 1", "style": "Short" },
-        { "id": "question2", "label": "Vraag 2", "style": "Paragraph" }
-      ],
-      "category3": [
-        { "id": "question1", "label": "Vraag 1", "style": "Short" },
-        { "id": "question2", "label": "Vraag 2", "style": "Paragraph" }
-      ]
-    },
-    "TEKST_IN_TICKET_EMBED_PER_CATEGORIE": {
-      "category1": "Beschrijving voor categorie 1",
-      "category2": "Beschrijving voor categorie 2",
-      "category3": "Beschrijving voor categorie 3"
-    },
-    "TICKET_NAAM_BEGIN": {
-      "category1": "ticket-cat1",
-      "category2": "ticket-cat2",
-      "category3": "ticket-cat3"
-    },
-    "TICKET_LOGS_CHANNEL_ID": "1275409074229346334",
-    "FEEDBACK_CHANNEL_ID": "1277691852841160846"
-  }  
+  "ALLOWED_ROLES_PER_CATEGORY": {
+    "category1": "ROLE-ID",
+    "category2": "ROLE-ID",
+    "category3": "ROLE-ID"
+  },
+  "STAFF_ROLE_ID": "ROLE-ID",
+  "TICKET_CATEGORY_IDS": {
+    "category1": "CATEGORY-ID",
+    "category2": "CATEGORY-ID",
+    "category3": "CATEGORY-ID"
+  },
+  "CATEGORY_NAMES": { 
+    "category1": "Category 1",
+    "category2": "Category 2",
+    "category3": "Category 3"
+  },
+  "QUESTIONS_PER_CATEGORY": {
+    "category1": [
+      { "id": "question1", "label": "Question 1", "style": "Short" },
+      { "id": "question2", "label": "Question 2", "style": "Paragraph" }
+    ],
+    "category2": [
+      { "id": "question1", "label": "Question 1", "style": "Short" },
+      { "id": "question2", "label": "Question 2", "style": "Paragraph" }
+    ],
+    "category3": [
+      { "id": "question1", "label": "Question 1", "style": "Short" },
+      { "id": "question2", "label": "Question 2", "style": "Paragraph" }
+    ]
+  },
+  "TEXT_IN_TICKET_EMBED_PER_CATEGORY": {
+    "category1": "Description for category 1",
+    "category2": "Description for category 2",
+    "category3": "Description for category 3"
+  },
+  "TICKET_NAME_PREFIX": {
+    "category1": "ticket-cat1",
+    "category2": "ticket-cat2",
+    "category3": "ticket-cat3"
+  },
+  "TICKET_LOGS_CHANNEL_ID": "CHANNEL-ID",
+  "FEEDBACK_CHANNEL_ID": "CHANNEL-ID"
+}
