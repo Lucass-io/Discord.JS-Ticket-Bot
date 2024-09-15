@@ -20,7 +20,7 @@ npm install discord.js
 npm install discord-html-transcripts
 ```
 
-3. If ur hosting via an hosting service, head to the settings page and find the "Additional node packages" in there put "discord-html-transcripts" like in the picture under here.
+3. If ur hosting via an hosting service, head to the settings page and find the "Additional node packages" (can be named differently) in there put "discord-html-transcripts" like in the picture under here.
 
 <img src="https://cdn.discordapp.com/attachments/1143939489576788139/1284968299553230868/image.png?ex=66e88f7c&is=66e73dfc&hm=5db57db6a5ed4eab9ffad830a8f4c364e7e0ce8cd5344cdd7c86021907a39bc2&" />
 
