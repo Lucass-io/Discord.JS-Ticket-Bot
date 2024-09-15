@@ -12,6 +12,9 @@ Set up all your information in the *config.json* and *tickets_config.json* Files
   "TOKEN": "BOT_TOKEN", // Your bot's token
   "CLIENT_ID": "111" // Your bot's client id
   "GUILD_ID": "111" // The server id where the bot will be used in
+
+
+  
   
   "ALLOWED_ROLES_PER_CATEGORY": { // If it's only one, just put the same one in all the categories. If u have specific roles for ticket categories, fill in those role id's, only staff with that specific role can see those tickets.
     "category1": "ROLE-ID",
