@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits, ActionRowBuilder, StringSelectMenuBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, PermissionsBitField, ChannelType, EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const { ALLOWED_ROLES_PER_CATEGORY, STAFF_ROLE_ID, TICKET_CATEGORY_IDS, CATEGORY_NAMES, QUESTIONS_PER_CATEGORY, TICKET_EMBED_TEXT_PER_CATEGORY, TICKET_NAME_PREFIX, TICKET_LOGS_CHANNEL_ID, FEEDBACK_CHANNEL_ID } = require('../../configs/tickets_config.json');
+const { ALLOWED_ROLES_PER_CATEGORY, STAFF_ROLE_ID, TICKET_CATEGORY_IDS, CATEGORY_NAMES, QUESTIONS_PER_CATEGORY, TICKET_EMBED_TEXT_PER_CATEGORY, TICKET_NAME_PREFIX, TICKET_LOGS_CHANNEL_ID, FEEDBACK_CHANNEL_ID, EMBED_COLOR_HEX } = require('../../configs/tickets_config.json');
 
 const usersWithOpenTickets = new Set();
 
@@ -47,7 +47,7 @@ function registerTicketBot(client) {
                     .setAuthor({ name: 'Lucas | Tickets' })
                     .setTitle('Lucas | Ticket Panel')
                     .setDescription('Dear all! You have come to the right place to ask a question to our team! \n \nClick the button below this message to open a ticket! Choose the category that best matches your question, and if your category is not listed, we might be able to add it later.\n \nFor now, choose the most suitable category!')
-                    .setColor(0xdd42f5)
+                    .setColor(EMBED_COLOR_HEX)
                     .setFooter({ text: 'Lucas | Tickets' });
 
                 await interaction.reply({ content: 'Generating embed...', ephemeral: true });
@@ -111,7 +111,7 @@ function registerTicketBot(client) {
                 .setAuthor({ name: 'Lucas | Tickets' })
                 .setTitle('Lucas | Ticket Category')
                 .setDescription(`Dear ${interaction.user}, you are at the right place to open your ticket! Click on the most appropriate question in the dropdown below this message! \n \nIf the most appropriate option is not here, choose the "Other question" category! We can always help you here.`)
-                .setColor(0xdd42f5)
+                .setColor(EMBED_COLOR_HEX)
                 .setFooter({ text: 'Lucas | Tickets' });
 
             await interaction.reply({ embeds: [dropdownEmbed], components: [row], ephemeral: true });
@@ -155,7 +155,7 @@ function registerTicketBot(client) {
                     const editedNameEmbed = new EmbedBuilder()
                         .setTitle('The ticket name has been changed')
                         .setDescription(`The name has been changed to:\n \n **${newChannelName}**`)
-                        .setColor(0xdd42f5);
+                        .setColor(EMBED_COLOR_HEX);
 
                     await interaction.editReply({ embeds: [editedNameEmbed] });
 
@@ -210,7 +210,7 @@ function registerTicketBot(client) {
                     const introEmbed = new EmbedBuilder()
                         .setTitle('Lucas - Tickets')
                         .setDescription(categoryDescription)
-                        .setColor(0xdd42f5);
+                        .setColor(EMBED_COLOR_HEX);
 
                     await ticketChannel.send({ embeds: [introEmbed] });
 
@@ -219,7 +219,7 @@ function registerTicketBot(client) {
                             .setTitle('Form Overview')
                             .setDescription('Here are the answers provided in the form:')
                             .addFields(answers)
-                            .setColor(0xdd42f5);
+                            .setColor(EMBED_COLOR_HEX);
 
                         const deleteButton = new ButtonBuilder()
                             .setCustomId('deleteTicket')
@@ -295,7 +295,7 @@ function registerTicketBot(client) {
                     const deleteEmbed = new EmbedBuilder()
                         .setTitle('Ticket closed')
                         .setDescription('The ticket will be deleted in 5 seconds.')
-                        .setColor(0xFF0000);
+                        .setColor(EMBED_COLOR_HEX);
     
                     await interaction.reply({ embeds: [deleteEmbed] });
 
@@ -307,7 +307,7 @@ function registerTicketBot(client) {
                         .addFields(
                             { name: 'Ticket Information', value: `> Ticket creator: <@${TicketCreator}> \n> Category: ${categoryLabel} \n> Total number of messages: ${messageCount}`, inline: true },
                         )
-                        .setColor(0xdd42f5);
+                        .setColor(EMBED_COLOR_HEX);
     
                     setTimeout(async () => {
                         const logChannel = client.channels.cache.get(TICKET_LOGS_CHANNEL_ID);
@@ -339,7 +339,7 @@ function registerTicketBot(client) {
                                 .addFields(
                                     { name: 'Ticket Information', value: `> Category: ${categoryLabel}. \n> Channel name: ${channel.name} \n> Total number of messages: ${messageCount}`, inline: false}
                                 )
-                                .setColor(0xdd42f5);
+                                .setColor(EMBED_COLOR_HEX);
     
                             const ratingMessage = await ticketOpener.send({
                                 embeds: [ratingEmbed],
@@ -417,7 +417,7 @@ function registerTicketBot(client) {
                 .setTimestamp()
                 .setFooter({ text: interaction.user.tag, iconURL: interaction.user.avatarURL()})
                 .setThumbnail(interaction.user.avatarURL())
-                .setColor(0xdd42f5);
+                .setColor(EMBED_COLOR_HEX);
         
             if (feedbackChannel) {
                 await feedbackChannel.send({ embeds: [feedbackEmbed] });
@@ -441,7 +441,7 @@ function registerTicketBot(client) {
                     { name: 'Ticket Information', value: `> Category: ${ticketData.categoryLabel}. \n> Channel name: ${ticketData.channelName} \n> Total number of messages: ${ticketData.messageCount}`, inline: false},
                     { name: `Your rating`, value: `> ${'⭐'.repeat(parseInt(selectedRating))} \n> ${additionalMessage}` },
                 )
-                .setColor(0xdd42f5);
+                .setColor(EMBED_COLOR_HEX);
         
             await dmChannel.send({
                 embeds: [newFeedbackEmbed],

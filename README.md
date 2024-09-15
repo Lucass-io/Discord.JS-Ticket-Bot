@@ -1,5 +1,5 @@
 # Discord.JS-Ticket-System
-A highly optimized Discord.js ticket system with Buttons, Select Menu's and Modals.
+A highly optimized Discord.js ticket system with Buttons, Select Menu's, Modals per category and even a feedback system so people can rate your service!
 
 
 
@@ -14,7 +14,7 @@ Set up all your information in the *config.json* and *tickets_config.json* Files
   "GUILD_ID": "111" // The server id where the bot will be used in
 
 
-  
+
   
   "ALLOWED_ROLES_PER_CATEGORY": { // If it's only one, just put the same one in all the categories. If u have specific roles for ticket categories, fill in those role id's, only staff with that specific role can see those tickets.
     "category1": "ROLE-ID",
@@ -67,7 +67,11 @@ Set up all your information in the *config.json* and *tickets_config.json* Files
 
   "FEEDBACK_CHANNEL_ID": "CHANNEL-ID" // The channel id of the channel where all the reviews will be displayed once a review is given via PM.
 
+  "EMBED_COLOR_HEX": "FFFFFF" // The color you want your embeds to have.
+
 }
 ```
+
+<a href="https://www.google.com/search?q=color+picker&oq=color+picker&gs_lcrp=EgZjaHJvbWUyDAgAEEUYORixAxiABDIHCAEQABiABDIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIGCAUQRRg8MgYIBhBFGDwyBggHEEUYPNIBCDE3NzNqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8"><strong>Click here to choose a color for the "EMBED_COLOR_HEX", make sure to leave the "#" away.</strong></a>
 
 <strong>Of course there is an option to create more categories, and it's easily done. Just go to the *ticketBot.js* file. Once there, head to line *102*. There is the select menu displayed showing the 3 pre-existing categories. To add one, copy the third category and simply change "CATEGORY_NAMES.category3" to "CATEGORY_NAMES.category4". Once that is done, head to the *tickets_config.json* file and create a "category4" line with information where needed.</strong>
