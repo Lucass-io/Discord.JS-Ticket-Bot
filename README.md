@@ -2,7 +2,9 @@
 A highly optimized Discord.js ticket system with Buttons, Select Menu's, Modals per category and even a feedback system so people can rate your service!
 
 
+## 🔧 Setup
 
+To take my bot in use, simply <a href="https://github.com/Lucass-io/Discord.JS-Ticket-System/archive/refs/heads/main.zip" target="_blank">download the zipped file.</a>
 
 ## 🚀 Getting Started
 
