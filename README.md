@@ -64,8 +64,7 @@ Set up all your information in the *config.json* and *tickets_config.json* Files
 
   "FEEDBACK_CHANNEL_ID": "CHANNEL-ID" // The channel id of the channel where all the reviews will be displayed once a review is given via PM.
 
-  
-  <strong>Of course there is an option to create more categories, and it's easily done. Just go to the *ticketBot.js* file. Once there, head to line *102*. There is the select menu displayed showing the 3 pre-existing categories. To add one, copy the third category and simply change "CATEGORY_NAMES.category3" to "CATEGORY_NAMES.category4". Once that is done, head to the *tickets_config.json* file and create a "category4" line with information where needed.</strong>
-
 }
 ```
+
+<strong>Of course there is an option to create more categories, and it's easily done. Just go to the *ticketBot.js* file. Once there, head to line *102*. There is the select menu displayed showing the 3 pre-existing categories. To add one, copy the third category and simply change "CATEGORY_NAMES.category3" to "CATEGORY_NAMES.category4". Once that is done, head to the *tickets_config.json* file and create a "category4" line with information where needed.</strong>
