@@ -18,9 +18,9 @@ Hey there! I created a highly optimized discord ticket bot for the public includ
 
 Command | Description | Role
 ------------ | ------------- | -------------
-tickets | Displays indept information about the bot. | A role with administrator permissions
-add | Returns the help page, or one specific command info. | None
-remove | Returns the bot's latency and API ping. | None
+tickets | Opens up the ticket panel. | A role with administrator permissions
+add | Adds a person to a ticket (Only available in tickets) | None
+remove | Removes a person from a ticket (Only available in tickets) | None
 </div>
 
 <div id="setup">
@@ -47,8 +47,8 @@ npm install discord-html-transcripts
 <img src="https://cdn.discordapp.com/attachments/1143939489576788139/1284968299553230868/image.png?ex=66e88f7c&is=66e73dfc&hm=5db57db6a5ed4eab9ffad830a8f4c364e7e0ce8cd5344cdd7c86021907a39bc2&" />
 </div>
 
-
-## 🚀 Getting Started
+<div id="starting">
+<h2> 🚀 Getting Started </h2>
 
 Set up all your information in the *config.json* and *tickets_config.json* Files as such
 ```
@@ -120,3 +120,14 @@ Set up all your information in the *config.json* and *tickets_config.json* Files
 <a href="https://www.google.com/search?q=color+picker&oq=color+picker&gs_lcrp=EgZjaHJvbWUyDAgAEEUYORixAxiABDIHCAEQABiABDIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIGCAUQRRg8MgYIBhBFGDwyBggHEEUYPNIBCDE3NzNqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8"><strong>Click here to choose a color for the "EMBED_COLOR_HEX", make sure to leave the "#" away.</strong></a>
 
 <strong>Of course there is an option to create more categories, and it's easily done. Just go to the *ticketBot.js* file. Once there, head to line *102*. There is the select menu displayed showing the 3 pre-existing categories. To add one, copy the third category and simply change "CATEGORY_NAMES.category3" to "CATEGORY_NAMES.category4". Once that is done, head to the *tickets_config.json* file and create a "category4" line with information where needed.</strong>
+</div>
+
+<div id="contributing">
+<h2> 🙋‍♂️ Contributing </h2>
+If you would like to contribute, please fork this repository and submit a pull request! Anyone is welcome to suggest new features or improve the code's quality!
+</div>
+
+<div id="license">
+## 📄 License
+This project is licensed under the Apache License 2.0 - see the [LICENSE](https://github.com/Lucass-io/Discord.JS-Ticket-System/blob/main/LICENSE) file for details.
+</div>
