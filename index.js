@@ -12,7 +12,6 @@ const client = new Client({
     ] 
 });
 
-// Register files
 registerTicketBot(client);
 
 client.login(TOKEN);

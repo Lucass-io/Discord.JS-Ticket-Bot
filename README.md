@@ -1,5 +1,15 @@
-# Discord.JS-Ticket-System
-A highly optimized Discord.js ticket system with Buttons, Select Menu's, Modals per category and even a feedback system so people can rate your service!
+# 🎫 | Discord.js ticket bot
+## 📝 Table of Contents 
+
++ <a href="#about">About</a>
++ [Commands](https://github.com/zhon12345/Ticket-Bot#-commands)
++ [Contributing](https://github.com/zhon12345/Ticket-Bot#%EF%B8%8F-contributing)
++ [License](https://github.com/zhon12345/Ticket-Bot#-license)
+
+<div id="about">
+## ❔ About
+Hey there! I created a highly optimized discord ticket bot for the public including Buttons, Select Menu's, Customizable modals per ticket category and even a feedback system so people can rate your services! I created this bot in a short time of about 12 hours, so I have thoroughly checked for errors in this code... So, if you do find one. Make sure to let me know by [submitting an issue](https://github.com/Lucass-io/Discord.JS-Ticket-System/issues/new).
+</div>
 
 
 ## 🔧 Setup
@@ -32,6 +42,7 @@ Set up all your information in the *config.json* and *tickets_config.json* Files
   "TOKEN": "BOT_TOKEN", // Your bot's token
   "CLIENT_ID": "111" // Your bot's client id
   "GUILD_ID": "111" // The server id where the bot will be used in
+  "BOT_NAME": "The name of the bot" // The name you want to see in the titles of the embeds.
 
 
 

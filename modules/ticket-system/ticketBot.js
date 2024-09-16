@@ -6,7 +6,6 @@ const { BOT_NAME } = require('../../configs/config.json');
 
 const usersWithOpenTickets = new Set();
 
-
 function registerTicketBot(client) {
     client.once('ready', () => {
         console.log(`Logged in as ${client.user.tag}`);
