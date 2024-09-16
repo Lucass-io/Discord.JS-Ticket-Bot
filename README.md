@@ -7,7 +7,7 @@
 + [License](https://github.com/zhon12345/Ticket-Bot#-license)
 
 <div id="about">
-## ❔ About
+<h2> ❔ About </h2>
 Hey there! I created a highly optimized discord ticket bot for the public including Buttons, Select Menu's, Customizable modals per ticket category and even a feedback system so people can rate your services! I created this bot in a short time of about 12 hours, so I have thoroughly checked for errors in this code... So, if you do find one. Make sure to let me know by [submitting an issue](https://github.com/Lucass-io/Discord.JS-Ticket-System/issues/new).
 </div>
 
