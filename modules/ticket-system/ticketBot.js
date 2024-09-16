@@ -1,9 +1,11 @@
 const { Client, GatewayIntentBits, ActionRowBuilder, StringSelectMenuBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, PermissionsBitField, ChannelType, EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const { ALLOWED_ROLES_PER_CATEGORY, STAFF_ROLE_ID, TICKET_CATEGORY_IDS, CATEGORY_NAMES, QUESTIONS_PER_CATEGORY, TICKET_EMBED_TEXT_PER_CATEGORY, TICKET_NAME_PREFIX, TICKET_LOGS_CHANNEL_ID, FEEDBACK_CHANNEL_ID, EMBED_COLOR_HEX } = require('../../configs/tickets_config.json');
+const { ALLOWED_ROLES_PER_CATEGORY, STAFF_ROLE_ID, TICKET_CATEGORY_IDS, CATEGORY_NAMES, QUESTIONS_PER_CATEGORY, TEXT_IN_TICKET_EMBED_PER_CATEGORY, TICKET_NAME_PREFIX, TICKET_LOGS_CHANNEL_ID, FEEDBACK_CHANNEL_ID, EMBED_COLOR_HEX } = require('../../configs/tickets_config.json');
+const { BOT_NAME } = require('../../configs/config.json');
 
 const usersWithOpenTickets = new Set();
+
 
 function registerTicketBot(client) {
     client.once('ready', () => {
@@ -31,7 +33,7 @@ function registerTicketBot(client) {
     client.on('interactionCreate', async interaction => {
         if (interaction.isCommand()) {
             if (interaction.commandName === 'tickets') {
-                if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+              if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
                     await interaction.reply({ content: 'You do not have permission to use this.', ephemeral: true });
                     return;
                 }
@@ -39,16 +41,16 @@ function registerTicketBot(client) {
                 const button = new ButtonBuilder()
                     .setCustomId('openDropdown')
                     .setLabel('Ticket support')
-                    .setStyle(ButtonStyle.Primary);
+                    .setStyle(ButtonStyle.Primary)
+                    .setEmoji('<:arrow:1275166344324579379>'); 
 
                 const buttonRow = new ActionRowBuilder().addComponents(button);
 
                 const initialEmbed = new EmbedBuilder()
-                    .setAuthor({ name: 'Lucas | Tickets' })
-                    .setTitle('Lucas | Ticket Panel')
-                    .setDescription('Dear all! You have come to the right place to ask a question to our team! \n \nClick the button below this message to open a ticket! Choose the category that best matches your question, and if your category is not listed, we might be able to add it later.\n \nFor now, choose the most suitable category!')
+                    .setTitle(`${BOT_NAME} | Ticket Panel`)
+                    .setDescription('Dear all! You have come to the right place to ask a question to our team! \n \nClick the button below this message to open a ticket! Choose the best category that fits your question. If your category is not listed, we may add it later.\n \nFor now, choose the most appropriate category!')
                     .setColor(EMBED_COLOR_HEX)
-                    .setFooter({ text: 'Lucas | Tickets' });
+                    .setFooter({ text: `${BOT_NAME} | Tickets` });
 
                 await interaction.reply({ content: 'Generating embed...', ephemeral: true });
 
@@ -101,25 +103,25 @@ function registerTicketBot(client) {
                 .setPlaceholder('Select one of the categories')
                 .addOptions([
                     { label: CATEGORY_NAMES.category1, description: 'For all questions that don’t fit into other categories.', value: 'category1', emoji: '🏷️' },
-                    { label: CATEGORY_NAMES.category2, description: 'For when you want to purchase something.', value: 'category2', emoji: '🏷️' },
+                    { label: CATEGORY_NAMES.category2, description: 'For when you want to buy something.', value: 'category2', emoji: '🏷️' },
                     { label: CATEGORY_NAMES.category3, description: 'For when you need help with something.', value: 'category3', emoji: '🏷️' },
                 ]);
 
             const row = new ActionRowBuilder().addComponents(selectMenu);
 
             const dropdownEmbed = new EmbedBuilder()
-                .setAuthor({ name: 'Lucas | Tickets' })
-                .setTitle('Lucas | Ticket Category')
-                .setDescription(`Dear ${interaction.user}, you are at the right place to open your ticket! Click on the most appropriate question in the dropdown below this message! \n \nIf the most appropriate option is not here, choose the "Other question" category! We can always help you here.`)
+                .setAuthor({ name: `${BOT_NAME} | Tickets` })
+                .setTitle(`${BOT_NAME} | Ticket Category`)
+                .setDescription(`Dear ${interaction.user}, you are in the right place to open your ticket! Click on the most appropriate question in the dropdown below this message! \n \nIs the most suitable option not listed? Then choose the "Other question" category! We can always help you there.`)
                 .setColor(EMBED_COLOR_HEX)
-                .setFooter({ text: 'Lucas | Tickets' });
+                .setFooter({ text: `${BOT_NAME} | Tickets` });
 
             await interaction.reply({ embeds: [dropdownEmbed], components: [row], ephemeral: true });
         }
 
         if (interaction.isStringSelectMenu() && interaction.customId === 'selectCategory') {
             if (usersWithOpenTickets.has(interaction.user.id)) {
-                await interaction.reply({ content: 'You already have an open ticket. Please close your current ticket before creating a new one.', ephemeral: true });
+                await interaction.reply({ content: 'You already have an open ticket. Close your current ticket before creating a new one.', ephemeral: true });
                 return;
             }
 
@@ -152,17 +154,17 @@ function registerTicketBot(client) {
 
                     await interaction.channel.setName(newChannelName);
 
-                    const editedNameEmbed = new EmbedBuilder()
-                        .setTitle('The ticket name has been changed')
+                    const edittednameEmbed = new EmbedBuilder()
+                        .setTitle('The name of the ticket has been changed')
                         .setDescription(`The name has been changed to:\n \n **${newChannelName}**`)
                         .setColor(EMBED_COLOR_HEX);
 
-                    await interaction.editReply({ embeds: [editedNameEmbed] });
+                    await interaction.editReply({ embeds: [edittednameEmbed] });
 
                 } else {
                     const selectedCategory = interaction.customId.split('_')[1];
                     const categoryLabel = CATEGORY_NAMES[selectedCategory];
-                    const categoryDescription = TICKET_EMBED_TEXT_PER_CATEGORY[selectedCategory];
+                    const categoryDescription = TEXT_IN_TICKET_EMBED_PER_CATEGORY[selectedCategory];
                     const userId = interaction.user.id;
                     const categoryRoleId = ALLOWED_ROLES_PER_CATEGORY[selectedCategory];
                     const staffRoleId = STAFF_ROLE_ID;
@@ -208,7 +210,7 @@ function registerTicketBot(client) {
                     usersWithOpenTickets.add(userId);
 
                     const introEmbed = new EmbedBuilder()
-                        .setTitle('Lucas - Tickets')
+                        .setTitle(`${BOT_NAME} - Tickets`)
                         .setDescription(categoryDescription)
                         .setColor(EMBED_COLOR_HEX);
 
@@ -216,8 +218,8 @@ function registerTicketBot(client) {
 
                     if (answers.length > 0) {
                         const answersEmbed = new EmbedBuilder()
-                            .setTitle('Form Overview')
-                            .setDescription('Here are the answers provided in the form:')
+                            .setTitle('Form overview')
+                            .setDescription('Below is what was filled out in the form:')
                             .addFields(answers)
                             .setColor(EMBED_COLOR_HEX);
 
@@ -240,7 +242,7 @@ function registerTicketBot(client) {
                         await ticketChannel.send('No answers were provided in the form.');
                     }
 
-                    await interaction.editReply({ content: `Your ticket has been created. Check it out: ${ticketChannel}`, ephemeral: true });
+                    await interaction.editReply({ content: `Your ticket has been created, here it is: ${ticketChannel}`, ephemeral: true });
                 }
             } catch (error) {
                 console.error('An error occurred during an interaction:', error);
@@ -248,7 +250,7 @@ function registerTicketBot(client) {
                     try {
                         await interaction.reply({ content: 'An error occurred.', ephemeral: true });
                     } catch (err) {
-                        console.error('Failed to reply to the interaction:', err);
+                        console.error('Failed to respond to interaction:', err);
                     }
                 }
             }
@@ -305,7 +307,7 @@ function registerTicketBot(client) {
                         .setTitle('Ticket closed')
                         .setDescription(`Ticket **(${channel.name})** was closed by ${interaction.user}.`)
                         .addFields(
-                            { name: 'Ticket Information', value: `> Ticket creator: <@${TicketCreator}> \n> Category: ${categoryLabel} \n> Total number of messages: ${messageCount}`, inline: true },
+                            { name: 'Ticket information', value: `> Ticket creator: <@${TicketCreator}> \n> Category: ${categoryLabel} \n> Total number of messages: ${messageCount}`, inline: true },
                         )
                         .setColor(EMBED_COLOR_HEX);
     
@@ -390,7 +392,7 @@ function registerTicketBot(client) {
     
             const additionalMessageInput = new TextInputBuilder()
                 .setCustomId('additionalMessage')
-                .setLabel('Extra comment (optional)')
+                .setLabel('Additional comment (Not required)')
                 .setStyle(TextInputStyle.Short)
                 .setRequired(false);
     
@@ -411,7 +413,7 @@ function registerTicketBot(client) {
             const feedbackEmbed = new EmbedBuilder()
                 .setTitle('New Ticket Rating')
                 .addFields(
-                    { name: 'Ticket Information', value: `> Ticket creator: <@${interaction.user.id}> (${interaction.user.tag}) \n> Category: ${ticketData.categoryLabel}. \n> Total number of messages: ${ticketData.messageCount}`, inline: true },
+                    { name: 'Ticket information', value: `> Ticket creator: <@${interaction.user.id}> (${interaction.user.tag}) \n> Category: ${ticketData.categoryLabel}. \n> Total number of messages: ${ticketData.messageCount}`, inline: true },
                     { name: `Rating`, value: `> ${'⭐'.repeat(parseInt(selectedRating))} \n> ${additionalMessage}` },
                 )
                 .setTimestamp()
@@ -439,7 +441,7 @@ function registerTicketBot(client) {
                 .setDescription(`Your ticket has been closed in **${feedbackChannel.guild.name}**.`)
                 .addFields(
                     { name: 'Ticket Information', value: `> Category: ${ticketData.categoryLabel}. \n> Channel name: ${ticketData.channelName} \n> Total number of messages: ${ticketData.messageCount}`, inline: false},
-                    { name: `Your rating`, value: `> ${'⭐'.repeat(parseInt(selectedRating))} \n> ${additionalMessage}` },
+                    { name: `Your Rating`, value: `> ${'⭐'.repeat(parseInt(selectedRating))} \n> ${additionalMessage}` },
                 )
                 .setColor(EMBED_COLOR_HEX);
         
