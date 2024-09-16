@@ -2,17 +2,29 @@
 ## 📝 Table of Contents 
 
 + <a href="#about">About</a>
-+ [Commands](https://github.com/zhon12345/Ticket-Bot#-commands)
-+ [Contributing](https://github.com/zhon12345/Ticket-Bot#%EF%B8%8F-contributing)
-+ [License](https://github.com/zhon12345/Ticket-Bot#-license)
++ <a href="#commands">Commands</a>
++ <a href="#setup">Setup</a>
++ <a href="#starting">Getting Started</a>
++ <a href="#contributing">Contributing</a>
++ <a href="#license">License</a>
 
 <div id="about">
 <h2> ❔ About </h2>
 Hey there! I created a highly optimized discord ticket bot for the public including Buttons, Select Menu's, Customizable modals per ticket category and even a feedback system so people can rate your services! I created this bot in a short time of about 12 hours, so I have thoroughly checked for errors in this code... So, if you do find one. Make sure to let me know by [submitting an issue](https://github.com/Lucass-io/Discord.JS-Ticket-System/issues/new).
 </div>
 
+<div id="commands">
+<h2>💬 Commands</h2>
 
-## 🔧 Setup
+Command | Description | Role
+------------ | ------------- | -------------
+tickets | Displays indept information about the bot. | A role with administrator permissions
+add | Returns the help page, or one specific command info. | None
+remove | Returns the bot's latency and API ping. | None
+</div>
+
+<div id="setup">
+<h2> 🔧 Setup </h2>
 
 To take my bot in use,
 1. simply <a href="https://github.com/Lucass-io/Discord.JS-Ticket-System/archive/refs/heads/main.zip" target="_blank">download the zipped file.</a>
@@ -33,6 +45,8 @@ npm install discord-html-transcripts
 3. If ur hosting via an hosting service, head to the settings page and find the "Additional node packages" (can be named differently) in there put "discord-html-transcripts" like in the picture under here.
 
 <img src="https://cdn.discordapp.com/attachments/1143939489576788139/1284968299553230868/image.png?ex=66e88f7c&is=66e73dfc&hm=5db57db6a5ed4eab9ffad830a8f4c364e7e0ce8cd5344cdd7c86021907a39bc2&" />
+</div>
+
 
 ## 🚀 Getting Started
 
