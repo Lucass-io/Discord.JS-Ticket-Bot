@@ -1,5 +1,6 @@
 {
     "TOKEN": "BOT_TOKEN",
     "CLIENT_ID": 111,
-    "GUILD_ID": 111
+    "GUILD_ID": 111,
+    "BOT_NAME": "The name of the bot"
 }
